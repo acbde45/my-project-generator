@@ -1,0 +1,33 @@
+{
+  "name": "mpg",
+  "version": "0.0.1",
+  "description": "一个脚手架",
+  "scripts": {
+    "test": "node bin/my-project-generator.js react12"
+  },
+  "bin": {
+    "mpg": "./bin/my-project-generator.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acbde45/my-project-generator.git"
+  },
+  "author": "acbde45",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
+  "bugs": {
+    "url": "https://github.com/acbde45/my-project-generator/issues"
+  },
+  "homepage": "https://github.com/acbde45/my-project-generator#readme",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.2.1",
+    "cross-spawn": "^7.0.3",
+    "envinfo": "^7.7.3",
+    "fs-extra": "^9.0.1",
+    "semver": "^7.3.4",
+    "validate-npm-package-name": "^3.0.0"
+  }
+}
