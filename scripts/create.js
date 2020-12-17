@@ -1,4 +1,3 @@
-const commander = require('commander');
 const chalk = require('chalk');
 const path = require('path');
 const execSync = require('child_process').execSync;
@@ -8,65 +7,6 @@ const spawn = require('cross-spawn');
 const os = require('os');
 const semver = require('semver');
 const dns = require('dns');
-
-const packageJson = require(path.resolve(__dirname, '../../package.json'));
-
-let projectName;
-
-function init() {
-  const program = new commander.Command(packageJson.name)
-    .version(packageJson.version)
-    .arguments('<script>')
-    .arguments('[project-directory]')
-    .name(packageJson.name)
-    .usage(`${chalk.green('<project-directory>')} [options]`)
-    .action((_, name) => {
-      projectName = name;
-    })
-    .option('--verbose', '打印额外的日志')
-    .option(
-      '--template <path-to-template>',
-      '指定创建项目的模版',
-    )
-    .option('--by <package-manager>', '选择包管理工具', 'yarn')
-    .allowUnknownOption()
-    .parse(process.argv);
-
-  if (typeof projectName === 'undefined') {
-    console.error('请指定项目目录：');
-    console.log(
-      `  ${chalk.cyan(program.name())} new ${chalk.green('<project-directory>')}`
-    );
-    console.log();
-    console.log('比如:');
-    console.log(
-      `  ${chalk.cyan(program.name())} new ${chalk.green('my-react-app')}`
-    );
-    console.log();
-    process.exit(1);
-  }
-
-  if (!['yarn', 'npm', 'tnpm'].includes(program.by)) {
-    console.error('选择正确的包管理工具：');
-    console.log(
-      `  ${chalk.cyan(program.name())} ${chalk.green('<package-manager>')}`
-    );
-    console.log();
-    console.log('比如:');
-    console.log(
-      `  ${chalk.cyan(program.name())} ${chalk.green('yarn')}, 支持${chalk.blue('yarn，npm, tnpm')}`
-    );
-    console.log();
-    process.exit(1);
-  }
-
-  createApp(
-    projectName,
-    program.verbose,
-    program.template,
-    program.by,
-  );
-}
 
 function createApp(name, verbose, template, by) {
   const root = path.resolve(name);
@@ -590,4 +530,4 @@ function checkThatNpmCanReadCwd() {
   return false;
 }
 
-module.exports = init;
+module.exports = createApp;
