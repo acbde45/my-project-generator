@@ -2,8 +2,9 @@
   "name": "mpg",
   "version": "0.0.1",
   "description": "一个脚手架",
+  "main": "lib",
   "scripts": {
-    "test": "node bin/my-project-generator.js react12"
+    "start": "node ./bin/my-project-generator.js"
   },
   "bin": {
     "mpg": "./bin/my-project-generator.js"

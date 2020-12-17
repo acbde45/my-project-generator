@@ -11,6 +11,4 @@ if (major < 10) {
   process.exit(1);
 }
 
-var init = require('../src').init;
-
-init();
+require('../lib').command();
