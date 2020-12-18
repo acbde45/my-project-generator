@@ -7,6 +7,7 @@ const spawn = require('cross-spawn');
 const os = require('os');
 const semver = require('semver');
 const dns = require('dns');
+const init = require('./init');
 
 function createApp(name, verbose, template, by) {
   const root = path.resolve(name);
@@ -105,17 +106,7 @@ function run(
 
     const nodeArgs = [];
 
-    await executeNodeScript(
-      {
-        cwd: process.cwd(),
-        args: nodeArgs,
-      },
-      [root, appName, verbose, originalDirectory, templateToInstall],
-      `
-    var init = require('${packageToInstall}/scripts/init.js');
-    init.apply(null, JSON.parse(process.argv[1]));
-  `
-    );
+    init(root, appName, verbose, originalDirectory, templateToInstall, by);
   }).catch(reason => {
     console.log();
     console.log('中止安装。');
