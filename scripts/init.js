@@ -1,9 +1,10 @@
+'use strict';
+
 const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const execSync = require('child_process').execSync;
 const spawn = require('cross-spawn');
-const { defaultBrowsers } = require('../utils/browsersHelper');
 const os = require('os');
 
 // 当前文件夹内是否已经初始化过git
@@ -36,7 +37,7 @@ function tryGitInit() {
 function tryGitCommit(appPath) {
   try {
     execSync('git add -A', { stdio: 'ignore' });
-    execSync('git commit -m "Initialize project"', {
+    execSync('git commit -m "初始化项目"', {
       stdio: 'ignore',
     });
     return true;
@@ -78,7 +79,7 @@ module.exports = function (
   }
 
   const templatePath = path.dirname(
-    require.resolve(`${templateName}/package.json`, { paths: [appPath] })
+    require.resolve(`${appPath}/.template/package.json`, { paths: [appPath] })
   );
 
   const templateJsonPath = path.join(templatePath, 'template.json');
@@ -165,9 +166,6 @@ module.exports = function (
     extends: 'react-app',
   };
 
-  // Setup the browsers list
-  appPackage.browserslist = defaultBrowsers;
-
   // Add templatePackage keys/values to appPackage, replacing existing entries
   templatePackageToReplace.forEach(key => {
     appPackage[key] = templatePackage[key];
@@ -192,7 +190,7 @@ module.exports = function (
     fs.copySync(templateDir, appPath);
   } else {
     console.error(
-      `找不到提供的模板: ${chalk.green(templateDir)}`
+      `非标准模版: ${chalk.green(templateDir)}`
     );
     return;
   }
@@ -282,15 +280,14 @@ module.exports = function (
   }
 
   // Remove template
-  console.log(`使用 ${command} 删除模版...`);
   console.log();
+  console.log(`移除模版...`);
+  fs.removeSync(path.join(appPath, '.template'));
 
-  const proc = spawn.sync(command, [remove, templateName], {
-    stdio: 'inherit',
-  });
-  if (proc.status !== 0) {
-    console.error(`\`${command} ${args.join(' ')}\` 失败`);
-    return;
+  // Create git commit if git repo was initialized
+  if (initializedGit && tryGitCommit(appPath)) {
+    console.log();
+    console.log('Created git commit.');
   }
 
   // Display the most elegant way to cd.

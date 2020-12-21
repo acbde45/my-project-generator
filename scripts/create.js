@@ -1,3 +1,5 @@
+'use strict';
+
 const chalk = require('chalk');
 const path = require('path');
 const execSync = require('child_process').execSync;
@@ -8,6 +10,8 @@ const os = require('os');
 const semver = require('semver');
 const dns = require('dns');
 const init = require('./init');
+const { copyFileSync } = require('fs-extra');
+const { resolve } = require('path');
 
 function createApp(name, verbose, template, by) {
   const root = path.resolve(name);
@@ -76,20 +80,23 @@ function run(
   template,
   by
 ) {
-  const useYarn = by === 'yarn';
+  const templateName = template || 'simple-react-app';
   const packageToInstall = 'react-scripts';
-  const templateToInstall = template || 'cra-template';
-  const allDependencies = ['react', 'react-dom', packageToInstall, templateToInstall];
+  const allDependencies = ['react', 'react-dom', packageToInstall];
 
-  console.log('正在安装软件包，请稍等几分钟。');
+  moveTemplateToApp(templateName, root, originalDirectory).then(() => {
+    const useYarn = by === 'yarn';
+    
+    return checkIfOnline(useYarn).then(isOnline => ({
+      isOnline,
+    }));
+  }).then(({ isOnline }) => {
+    console.log('开始安装软件包，请稍等几分钟。');
 
-  checkIfOnline(useYarn).then(isOnline => ({
-    isOnline,
-  })).then(({ isOnline }) => {
     console.log(
       `下载 ${chalk.cyan('react')}, ${chalk.cyan(
         'react-dom'
-      )}, ${chalk.cyan(packageToInstall)} 和 ${chalk.cyan(templateToInstall)}...`
+      )}, ${chalk.cyan(packageToInstall)}...`
     );
     console.log();
 
@@ -102,11 +109,10 @@ function run(
     );
   }).then(async () => {
     checkNodeVersion(packageToInstall);
-    setCaretRangeForRuntimeDeps(templateToInstall);
 
     const nodeArgs = [];
 
-    init(root, appName, verbose, originalDirectory, templateToInstall, by);
+    init(root, appName, verbose, originalDirectory, templateName, by);
   }).catch(reason => {
     console.log();
     console.log('中止安装。');
@@ -125,6 +131,7 @@ function run(
       'package.json',
       'yarn.lock',
       'node_modules',
+      '.template'
     ];
     const currentFiles = fs.readdirSync(path.join(root));
     currentFiles.forEach(file => {
@@ -229,6 +236,12 @@ function checkIfOnline(useYarn) {
   });
 }
 
+function moveTemplateToApp(templateName, root, originalDirectory) {
+  const src = path.join(originalDirectory, `template/${templateName}`);
+  const dest = path.join(root, '.template');
+  return fs.copy(src, dest);
+}
+
 // 获取npm配置的代理
 function getProxy() {
   if (process.env.https_proxy) {
@@ -274,72 +287,6 @@ function checkNodeVersion(packageName) {
     );
     process.exit(1);
   }
-}
-
-// 确保依赖只固定主版本
-function setCaretRangeForRuntimeDeps(packageName) {
-  const packagePath = path.join(process.cwd(), 'package.json');
-  const packageJson = require(packagePath);
-
-  if (typeof packageJson.dependencies === 'undefined') {
-    console.error(chalk.red('package.json中缺少依赖项'));
-    process.exit(1);
-  }
-
-  const packageVersion = packageJson.dependencies[packageName];
-  if (typeof packageVersion === 'undefined') {
-    console.error(chalk.red(`没有在package.json中发现 ${packageName}`));
-    process.exit(1);
-  }
-
-  makeCaretRange(packageJson.dependencies, 'react');
-  makeCaretRange(packageJson.dependencies, 'react-dom');
-
-  fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2) + os.EOL);
-}
-
-// 确保依赖只固定主版本
-function makeCaretRange(dependencies, name) {
-  const version = dependencies[name];
-
-  if (typeof version === 'undefined') {
-    console.error(chalk.red(`package.json中缺少${name}依赖`));
-    process.exit(1);
-  }
-
-  let patchedVersion = `^${version}`;
-
-  if (!semver.validRange(patchedVersion)) {
-    console.error(
-      `无法修补依赖 ${name} 的版本，因为它的版本 ${chalk.red(
-        version
-      )} 会变成错误的版本 ${chalk.red(patchedVersion)}`
-    );
-    patchedVersion = version;
-  }
-
-  dependencies[name] = patchedVersion;
-}
-
-// 执行脚本
-function executeNodeScript({ cwd, args }, data, source) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      process.execPath,
-      ['-e', source, '--', JSON.stringify(data)],
-      { ...args, cwd, stdio: 'inherit' }
-    );
-
-    child.on('close', code => {
-      if (code !== 0) {
-        reject({
-          command: `node ${args.join(' ')}`,
-        });
-        return;
-      }
-      resolve();
-    });
-  });
 }
 
 // 检查项目名称是否合法

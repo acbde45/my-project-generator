@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 const { Command } = require('commander');
 const path = require('path');
@@ -14,6 +15,8 @@ program
   .usage(`${chalk.green('[command]')} [options]`)
   .option('--info', '打印环境调试信息')
   .command('new <project-directory>', '创建新项目', { executableFile: 'new.js' })
+  .command('start', '启动项目', { executableFile: 'start.js' })
+  .command('build', '编译项目', { executableFile: 'build.js' })
   .action(cmd => {
     if (cmd.info) {
       printEnvInfo();
