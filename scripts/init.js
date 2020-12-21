@@ -36,7 +36,7 @@ function tryGitInit() {
 function tryGitCommit(appPath) {
   try {
     execSync('git add -A', { stdio: 'ignore' });
-    execSync('git commit -m "Initialize project using Create React App"', {
+    execSync('git commit -m "Initialize project"', {
       stdio: 'ignore',
     });
     return true;
@@ -233,7 +233,7 @@ module.exports = function (
   if (tryGitInit()) {
     initializedGit = true;
     console.log();
-    console.log('Initialized a git repository.');
+    console.log('初始化了一个git仓库。');
   }
 
   let command;
