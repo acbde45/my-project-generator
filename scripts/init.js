@@ -3,7 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const execSync = require('child_process').execSync;
 const spawn = require('cross-spawn');
-const defaultBrowsers = require('../utils/browsersHelper');
+const { defaultBrowsers } = require('../utils/browsersHelper');
 const os = require('os');
 
 // 当前文件夹内是否已经初始化过git
