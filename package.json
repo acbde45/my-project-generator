@@ -1,5 +1,5 @@
 {
-  "name": "mpg",
+  "name": "my-project-generator",
   "version": "0.1.0",
   "description": "一个脚手架",
   "bin": {
