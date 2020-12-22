@@ -10,8 +10,6 @@ const os = require('os');
 const semver = require('semver');
 const dns = require('dns');
 const init = require('./init');
-const { copyFileSync } = require('fs-extra');
-const { resolve } = require('path');
 
 function createApp(name, verbose, template, by) {
   const root = path.resolve(name);
@@ -85,7 +83,7 @@ function run(
   const packageToInstall = 'react-scripts';
   const allDependencies = ['react', 'react-dom', packageToInstall];
 
-  moveTemplateToApp(templateName, root, originalDirectory).then(() => {
+  moveTemplateToApp(templateName, root).then(() => {
     const useYarn = by === 'yarn';
     
     return checkIfOnline(useYarn).then(isOnline => ({
@@ -237,8 +235,8 @@ function checkIfOnline(useYarn) {
   });
 }
 
-function moveTemplateToApp(templateName, root, originalDirectory) {
-  const src = path.join(originalDirectory, `template/${templateName}`);
+function moveTemplateToApp(templateName, root) {
+  const src = path.join(__dirname, `../template/${templateName}`);
   const dest = path.join(root, '.template');
   return fs.copy(src, dest);
 }
