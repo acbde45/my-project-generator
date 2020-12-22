@@ -31,6 +31,7 @@ function createApp(name, verbose, template, by) {
     name: appName,
     version: '0.1.0',
     private: true,
+    type: 'module',
   };
   fs.writeFileSync(
     path.join(root, 'package.json'),

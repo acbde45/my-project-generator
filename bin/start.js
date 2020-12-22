@@ -5,5 +5,12 @@ const { Command } = require('commander');
 const startApp = require('../scripts/start');
 
 const program = new Command();
-
-startApp();
+program
+  .action(async (cmd) => {
+    try {
+        await startApp();
+    } catch (e) {
+        console.log(e)
+    }
+  });
+program.parse(process.argv)

@@ -1,1 +1,0 @@
-# mpg-template-doc

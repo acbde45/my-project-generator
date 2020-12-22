@@ -78,11 +78,7 @@ module.exports = function (
     return;
   }
 
-  const templatePath = path.dirname(
-    require.resolve(`${appPath}/.template/package.json`, { paths: [appPath] })
-  );
-
-  const templateJsonPath = path.join(templatePath, 'template.json');
+  const templateJsonPath = path.join(`${appPath}/.template/`, 'template.json');
   let templateJson = {};
   if (fs.existsSync(templateJsonPath)) {
     templateJson = require(templateJsonPath);
@@ -185,7 +181,7 @@ module.exports = function (
   }
 
   // Copy the files for the user
-  const templateDir = path.join(templatePath, 'template');
+  const templateDir = path.join(`${appPath}/.template`, 'template');
   if (fs.existsSync(templateDir)) {
     fs.copySync(templateDir, appPath);
   } else {
