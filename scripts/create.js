@@ -7,7 +7,6 @@ const validateProjectName = require('validate-npm-package-name');
 const fs = require('fs-extra');
 const spawn = require('cross-spawn');
 const os = require('os');
-const semver = require('semver');
 const dns = require('dns');
 const init = require('./init');
 
@@ -23,13 +22,11 @@ function createApp(name, verbose, template, by) {
   console.log();
 
   console.log(`在 ${chalk.green(root)} 中创建一个新的React应用`);
-  console.log();
 
   const packageJson = {
     name: appName,
     version: '0.1.0',
     private: true,
-    type: 'module',
   };
   fs.writeFileSync(
     path.join(root, 'package.json'),
@@ -80,8 +77,6 @@ function run(
   by
 ) {
   const templateName = template || 'simple-react-app';
-  const packageToInstall = 'react-scripts';
-  const allDependencies = ['react', 'react-dom', packageToInstall];
 
   moveTemplateToApp(templateName, root).then(() => {
     const useYarn = by === 'yarn';
@@ -89,29 +84,10 @@ function run(
     return checkIfOnline(useYarn).then(isOnline => ({
       isOnline,
     }));
-  }).then(({ isOnline }) => {
-    console.log('开始安装软件包，请稍等几分钟。');
-
-    console.log(
-      `下载 ${chalk.cyan('react')}, ${chalk.cyan(
-        'react-dom'
-      )}, ${chalk.cyan(packageToInstall)}...`
-    );
-    console.log();
-
-    return install(
-      root,
-      by,
-      allDependencies,
-      verbose,
-      isOnline
-    );
   }).then(async () => {
-    checkNodeVersion(packageToInstall);
-
-    const nodeArgs = [];
 
     init(root, appName, verbose, originalDirectory, templateName, by);
+
   }).catch(reason => {
     console.log();
     console.log('中止安装。');
@@ -158,59 +134,6 @@ function run(
   });
 }
 
-function install(root, by, dependencies, verbose, isOnline) {
-  const useYarn = by === 'yarn';
-  return new Promise(function (resolve, reject) {
-    let command;
-    let args;
-    if (useYarn) {
-      command = 'yarnpkg';
-      args = ['add', '--exact'];
-      if (!isOnline) {
-        args.push('--offline');
-      }
-      [].push.apply(args, dependencies);
-
-      // Explicitly set cwd() to work around issues like
-      // https://github.com/facebook/create-react-app/issues/3326.
-      // Unfortunately we can only do this for Yarn because npm support for
-      // equivalent --prefix flag doesn't help with this issue.
-      // This is why for npm, we run checkThatNpmCanReadCwd() early instead.
-      args.push('--cwd');
-      args.push(root);
-
-      if (!isOnline) {
-        console.log(chalk.yellow('你可能处于离线环境。'));
-        console.log();
-      }
-    } else {
-      command = by === 'tnpm' ? 'tnpm' : 'npm';
-      args = [
-        'install',
-        '--save',
-        '--save-exact',
-        '--loglevel',
-        'error',
-      ].concat(dependencies);
-    }
-
-    if (verbose) {
-      args.push('--verbose');
-    }
-
-    const child = spawn(command, args, { stdio: 'inherit' });
-    child.on('close', code => {
-      if (code !== 0) {
-        reject({
-          command: `${command} ${args.join(' ')}`,
-        });
-        return;
-      }
-      resolve();
-    });
-  });
-}
-
 // 检查是否在线
 function checkIfOnline(useYarn) {
   if (!useYarn) {
@@ -253,38 +176,6 @@ function getProxy() {
     } catch (e) {
       return;
     }
-  }
-}
-
-// 检查依赖要求的Node版本是否符合
-function checkNodeVersion(packageName) {
-  const packageJsonPath = path.resolve(
-    process.cwd(),
-    'node_modules',
-    packageName,
-    'package.json'
-  );
-
-  if (!fs.existsSync(packageJsonPath)) {
-    return;
-  }
-
-  const packageJson = require(packageJsonPath);
-  if (!packageJson.engines || !packageJson.engines.node) {
-    return;
-  }
-
-  if (!semver.satisfies(process.version, packageJson.engines.node)) {
-    console.error(
-      chalk.red(
-        '当前Node版本为 %s.\n' +
-          '创建React程序需要 %s 或更高 \n' +
-          '请升级你的Node版本。'
-      ),
-      process.version,
-      packageJson.engines.node
-    );
-    process.exit(1);
   }
 }
 
