@@ -5,6 +5,7 @@ const path = require('path');
 const chalk = require('chalk');
 const execSync = require('child_process').execSync;
 const spawn = require('cross-spawn');
+const { defaultBrowsers } = require('react-dev-utils/browsersHelper');
 const os = require('os');
 
 // 当前文件夹内是否已经初始化过git
@@ -159,6 +160,9 @@ module.exports = function (
   appPackage.eslintConfig = {
     extends: 'react-app',
   };
+
+  // Setup the browsers list
+  appPackage.browserslist = defaultBrowsers;
 
   // Add templatePackage keys/values to appPackage, replacing existing entries
   templatePackageToReplace.forEach(key => {

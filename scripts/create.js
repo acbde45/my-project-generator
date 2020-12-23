@@ -19,7 +19,6 @@ function createApp(name, verbose, template, by) {
   if (!isSafeToCreateProjectIn(root, name)) {
     process.exit(1);
   }
-  console.log();
 
   console.log(`在 ${chalk.green(root)} 中创建一个新的React应用`);
 
