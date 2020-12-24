@@ -2,8 +2,15 @@
 'use strict';
 
 const { Command } = require('commander');
-const buildApp = require('../scripts/build');
+const startApp = require('../scripts/build');
 
 const program = new Command();
-
-buildApp();
+program
+  .option('--stats <stats>', '生成统计文件')
+  .action(async (cmd) => {
+    startApp({
+      host: cmd.host,
+      port: cmd.port,
+    });
+  });
+program.parse(process.argv)

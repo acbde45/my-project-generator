@@ -29,7 +29,7 @@ function getModules() {
 
   if (hasTsConfig && hasJsConfig) {
     throw new Error(
-      'You have both a tsconfig.json and a jsconfig.json. If you are using TypeScript please remove your jsconfig.json file.'
+      '您同时拥有tsconfig.json和jsconfig.json。 如果您使用的是TypeScript，请删除jsconfig.json文件。'
     );
   }
 
