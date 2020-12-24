@@ -304,22 +304,6 @@ function init(
     }
   }
 
-  const gitignoreExists = fs.existsSync(path.join(appPath, '.gitignore'));
-  if (gitignoreExists) {
-    // Append if there's already a `.gitignore` file there
-    const data = fs.readFileSync(path.join(appPath, 'gitignore'));
-    fs.appendFileSync(path.join(appPath, '.gitignore'), data);
-    fs.unlinkSync(path.join(appPath, 'gitignore'));
-  } else {
-    // Rename gitignore after the fact to prevent npm from renaming it to .npmignore
-    // See: https://github.com/npm/npm/issues/1862
-    fs.moveSync(
-      path.join(appPath, 'gitignore'),
-      path.join(appPath, '.gitignore'),
-      []
-    );
-  }
-
   // Initialize git repo
   let initializedGit = false;
 
@@ -356,14 +340,8 @@ function init(
     );
   }
 
-  // Install react and react-dom for backward compatibility with old CRA cli
-  // which doesn't install react and react-dom along with react-scripts
-  if (!isReactInstalled(appPackage)) {
-    args = args.concat(['react', 'react-dom']);
-  }
-
   // Install template dependencies, and react and react-dom if missing.
-  if ((!isReactInstalled(appPackage) || templateName) && args.length > 1) {
+  if (templateName && args.length > 1) {
     console.log();
     console.log(`使用 ${command} 下载模版的依赖...`);
 
@@ -443,7 +421,7 @@ function checkAppName(appName) {
     process.exit(1);
   }
 
-  const dependencies = ['react', 'react-dom', 'react-scripts'].sort();
+  const dependencies = ['react', 'react-dom', 'mpg'].sort();
   if (dependencies.includes(appName)) {
     console.error(
       chalk.red(
@@ -651,15 +629,6 @@ function tryGitCommit(appPath) {
     }
     return false;
   }
-}
-
-function isReactInstalled(appPackage) {
-  const dependencies = appPackage.dependencies || {};
-
-  return (
-    typeof dependencies.react !== 'undefined' &&
-    typeof dependencies['react-dom'] !== 'undefined'
-  );
 }
 
 module.exports = createApp;
