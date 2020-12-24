@@ -1,6 +1,6 @@
 {
   "name": "my-project-generator",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "一个脚手架",
   "bin": {
     "mpg": "./bin/my-project-generator.js"
