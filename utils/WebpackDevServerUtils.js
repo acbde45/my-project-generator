@@ -11,8 +11,6 @@ const prompts = require('prompts');
 const clearConsole = require('react-dev-utils/clearConsole');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 const getProcessForPort = require('react-dev-utils/getProcessForPort');
-const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const forkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 
 const isInteractive = process.stdout.isTTY;
 
@@ -99,7 +97,6 @@ function createCompiler({
   devSocket,
   urls,
   useYarn,
-  useTypeScript,
   webpack,
 }) {
   // "Compiler" is a low-level interface to webpack.
@@ -127,31 +124,6 @@ function createCompiler({
   });
 
   let isFirstCompile = true;
-  let tsMessagesPromise;
-  let tsMessagesResolver;
-
-  if (useTypeScript) {
-    compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-      tsMessagesPromise = new Promise(resolve => {
-        tsMessagesResolver = msgs => resolve(msgs);
-      });
-    });
-
-    forkTsCheckerWebpackPlugin
-      .getCompilerHooks(compiler)
-      .receive.tap('afterTypeScriptCheck', (diagnostics, lints) => {
-        const allMsgs = [...diagnostics, ...lints];
-        const format = message =>
-          `${message.file}\n${typescriptFormatter(message, true)}`;
-
-        tsMessagesResolver({
-          errors: allMsgs.filter(msg => msg.severity === 'error').map(format),
-          warnings: allMsgs
-            .filter(msg => msg.severity === 'warning')
-            .map(format),
-        });
-      });
-  }
 
   // "done" event fires when webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
@@ -170,34 +142,6 @@ function createCompiler({
       warnings: true,
       errors: true,
     });
-
-    if (useTypeScript && statsData.errors.length === 0) {
-      const delayedMsg = setTimeout(() => {
-        console.log(
-          chalk.yellow(
-            '文件成功发出，等待类型检查结果...'
-          )
-        );
-      }, 100);
-
-      const messages = await tsMessagesPromise;
-      clearTimeout(delayedMsg);
-      statsData.errors.push(...messages.errors);
-      statsData.warnings.push(...messages.warnings);
-
-      stats.compilation.errors.push(...messages.errors);
-      stats.compilation.warnings.push(...messages.warnings);
-
-      if (messages.errors.length > 0) {
-        devSocket.errors(messages.errors);
-      } else if (messages.warnings.length > 0) {
-        devSocket.warnings(messages.warnings);
-      }
-
-      if (isInteractive) {
-        clearConsole();
-      }
-    }
 
     const messages = formatWebpackMessages(statsData);
     const isSuccessful = !messages.errors.length && !messages.warnings.length;
@@ -227,26 +171,6 @@ function createCompiler({
       console.log(messages.warnings.join('\n\n'));
     }
   });
-
-  // You can safely remove this after ejecting.
-  // We only use this block for testing of Create React App itself:
-  const isSmokeTest = process.argv.some(
-    arg => arg.indexOf('--smoke-test') > -1
-  );
-  if (isSmokeTest) {
-    compiler.hooks.failed.tap('smokeTest', async () => {
-      await tsMessagesPromise;
-      process.exit(1);
-    });
-    compiler.hooks.done.tap('smokeTest', async stats => {
-      await tsMessagesPromise;
-      if (stats.hasErrors() || stats.hasWarnings()) {
-        process.exit(1);
-      } else {
-        process.exit(0);
-      }
-    });
-  }
 
   return compiler;
 }

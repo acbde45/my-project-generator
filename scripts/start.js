@@ -45,8 +45,6 @@ function startApp(options) {
     const config = configFactory('development');
     const appName = require(paths.appPackageJson).name;
 
-    const useTypeScript = fs.existsSync(paths.appTsConfig);
-
     const urls = prepareUrls(
       options.host,
       port,
@@ -65,7 +63,6 @@ function startApp(options) {
       devSocket,
       urls,
       useYarn,
-      useTypeScript,
       webpack,
     });
     // Load proxy config

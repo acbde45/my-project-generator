@@ -21,9 +21,6 @@
   "dependencies": {
     "@babel/core": "7.12.3",
     "@svgr/webpack": "5.4.0",
-    "@typescript-eslint/eslint-plugin": "4.5.0",
-    "@typescript-eslint/parser": "4.5.0",
-    "babel-eslint": "10.1.0",
     "babel-loader": "8.1.0",
     "babel-plugin-named-asset-import": "0.3.7",
     "babel-preset-react-app": "^10.0.0",
@@ -34,15 +31,6 @@
     "cross-spawn": "7.0.3",
     "css-loader": "5.0.1",
     "envinfo": "7.7.3",
-    "eslint": "7.11.0",
-    "eslint-config-react-app": "6.0.0",
-    "eslint-plugin-flowtype": "5.2.0",
-    "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-jest": "24.1.0",
-    "eslint-plugin-jsx-a11y": "6.3.1",
-    "eslint-plugin-react": "7.21.5",
-    "eslint-plugin-react-hooks": "4.2.0",
-    "eslint-webpack-plugin": "2.1.0",
     "file-loader": "6.1.1",
     "fs-extra": "9.0.1",
     "get-port": "5.1.1",
@@ -58,10 +46,8 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
     "prompts": "2.4.0",
-    "react-demo-loader": "^1.6.11",
     "react-dev-utils": "11.0.0",
     "react-refresh": "0.8.3",
-    "resolve": "1.18.1",
     "resolve-url-loader": "3.1.2",
     "sass-loader": "8.0.2",
     "semver": "7.3.2",
@@ -70,21 +56,11 @@
     "url-loader": "4.1.1",
     "validate-npm-package-name": "3.0.0",
     "webpack": "4.44.2",
-    "webpack-dev-server": "3.11.0",
-    "webpack-manifest-plugin": "2.2.0",
-    "workbox-webpack-plugin": "5.1.4"
+    "webpack-dev-server": "3.11.0"
   },
   "devDependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
-  },
-  "peerDependencies": {
-    "typescript": "^3.2.1"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   },
   "browserslist": {
     "production": [
