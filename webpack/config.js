@@ -567,12 +567,6 @@ module.exports = function (webpackEnv) {
           }),
           async: isEnvDevelopment,
           checkSyntacticErrors: true,
-          resolveModuleNameModule: process.versions.pnp
-            ? `${__dirname}/pnpTs.js`
-            : undefined,
-          resolveTypeReferenceDirectiveModule: process.versions.pnp
-            ? `${__dirname}/pnpTs.js`
-            : undefined,
           tsconfig: paths.appTsConfig,
           reportFiles: [
             // This one is specifically to match during CI tests,
