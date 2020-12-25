@@ -58,6 +58,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "5.0.2",
     "prompts": "2.4.0",
+    "react-demo-loader": "^1.6.11",
     "react-dev-utils": "11.0.0",
     "react-refresh": "0.8.3",
     "resolve": "1.18.1",

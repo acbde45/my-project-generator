@@ -16,7 +16,7 @@ module.exports = function (proxy, allowedHost) {
     watchContentBase: true,
     hot: true,
     transportMode: 'ws',
-    injectClient: false,
+    inline: true,
     publicPath: paths.publicUrlOrPath.slice(0, -1),
     quiet: true,
     watchOptions: {

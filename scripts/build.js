@@ -65,16 +65,6 @@ function buildApp(options) {
       if (warnings.length) {
         console.log(chalk.yellow('编译完成但是有警告。\n'));
         console.log(warnings.join('\n\n'));
-        console.log(
-          '\n搜索关键字 ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' 去了解这些警告。'
-        );
-        console.log(
-          '忽视使用 ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' 在代码行之上。\n'
-        );
       } else {
         console.log(chalk.green('编译成功。\n'));
       }

@@ -225,18 +225,6 @@ function createCompiler({
     if (messages.warnings.length) {
       console.log(chalk.yellow('编译完成但是有警告。\n'));
       console.log(messages.warnings.join('\n\n'));
-
-      // Teach some ESLint tricks.
-      console.log(
-        '\n搜索关键字 ' +
-          chalk.underline(chalk.yellow('keywords')) +
-          ' 去了解相关问题'
-      );
-      console.log(
-        '忽视使用 ' +
-          chalk.cyan('// eslint-disable-next-line') +
-          ' 在代码行上方\n'
-      );
     }
   });
 
